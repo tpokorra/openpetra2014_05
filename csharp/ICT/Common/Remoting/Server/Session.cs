@@ -99,6 +99,7 @@ namespace Ict.Common.Remoting.Server
                 }
 
                 FSessionObjects.Add(sessionID, new SortedList <string, object>());
+                InitThread(sessionID);
             }
 
             return sessionID;
