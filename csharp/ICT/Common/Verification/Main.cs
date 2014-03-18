@@ -1504,8 +1504,6 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-
-
         /// remove a result from the list
         /// </summary>
         /// <param name="value">value to delete</param>
