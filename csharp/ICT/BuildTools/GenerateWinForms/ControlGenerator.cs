@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -520,6 +520,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             base.SetControlProperties(writer, ctrl);
             writer.SetControlProperty(ctrl, "FixedRows", "1");
+            writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".CancelEditingWithEscapeKey = false;" + Environment.NewLine);
             return writer.FTemplate;
         }
     }
@@ -531,7 +532,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
     {
         /// <summary>constructor</summary>
         public PrintPreviewGenerator()
-            : base("ppv", typeof(PrintPreviewControl))
+            : base("ppv", "Ict.Petra.Client.CommonControls.TUC_PrintPreviewControl")
+        {
+            FGenerateLabel = false;
+        }
+    }
+
+    /// <summary>
+    /// generator for a browser control (used for email preview at the moment)
+    /// </summary>
+    public class BrowserGenerator : TControlGenerator
+    {
+        /// <summary>constructor</summary>
+        public BrowserGenerator()
+            : base("brw", typeof(WebBrowser))
         {
             FGenerateLabel = false;
         }

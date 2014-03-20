@@ -614,10 +614,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         // when cmbBankCode is changed
         private void BankCodeChanged(System.Object sender, EventArgs e)
         {
-            if ((string.IsNullOrEmpty(cmbBankCode.GetSelectedString()) && !string.IsNullOrEmpty(FCurrentBankRow.BranchCode))
-                || ((cmbBankCode.GetSelectedString() == "<INACTIVE> ") && (FCurrentBankRow.BranchCode != "<INACTIVE> ")))
+            if ((string.IsNullOrEmpty(cmbBankCode.GetSelectedString()) && (FCurrentBankRow != null)
+                 && !string.IsNullOrEmpty(FCurrentBankRow.BranchCode))
+                || ((cmbBankCode.GetSelectedString() == "<INACTIVE> ") && ((FCurrentBankRow == null) || (FCurrentBankRow.BranchCode != "<INACTIVE> "))))
             {
                 // if "<INACTIVE>" has been selected change it to blank
+                FCurrentBankRow = FBankDataset.PBank.NewRowTyped();
+                FCurrentBankRow.BranchCode = "";
                 cmbBankCode.SelectedIndex = -1;
                 txtBankKey.Text = "0";
             }
@@ -893,22 +896,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             strRight = GetMatchButtonsString(pnlRightColumn);
             TUserDefaults.SetDefault(TUserDefaults.PARTNER_EDIT_MATCHSETTINGS_LEFT, strLeft);
             TUserDefaults.SetDefault(TUserDefaults.PARTNER_EDIT_MATCHSETTINGS_RIGHT, strRight);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public void RestoreSplitterSetting()
-        {
-            spcCriteria.SplitterDistance = TUserDefaults.GetInt32Default(TUserDefaults.PARTNER_FIND_SPLITPOS_CRITERIA, 326);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public void SaveSplitterSetting()
-        {
-            TUserDefaults.SetDefault(TUserDefaults.PARTNER_FIND_SPLITPOS_CRITERIA, spcCriteria.SplitterDistance);
         }
 
         /// <summary>
