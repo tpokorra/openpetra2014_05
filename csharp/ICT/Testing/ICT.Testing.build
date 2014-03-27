@@ -77,7 +77,7 @@
 </target>
 
 <target name="test-all">
-    <call target="test-without-display"/>
+    <!-- <call target="test-without-display"/> -->
     <call target="test-client"/>
 </target>
 
