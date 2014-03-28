@@ -131,14 +131,14 @@
           tofile="${path::combine(dir.bin, 'Mono.Security.dll')}"
           overwrite="false"/>
 
-      <!-- Copy the two web server files but do not overwrite because they may be running -->
+      <!-- Copy the two web server files but do not overwrite because they may be running; also don't fail on error -->
       <copy file="${path::combine(dir.delivery, 'bin/Ict.Tools.OpenPetraWebServer.exe')}"
           tofile="${path::combine(dir.delivery, 'Ict.Tools.OpenPetraWebServer.exe')}" 
-          overwrite="false"/>
+          overwrite="false" failonerror="false"/>
 
       <copy file="${path::combine(dir.delivery, 'bin/Ict.Tools.OpenPetraRuntimeHost.dll')}"
           tofile="${path::combine(dir.delivery, 'Ict.Tools.OpenPetraRuntimeHost.dll')}" 
-          overwrite="false"/>
+          overwrite="false" failonerror="false"/>
 
       <!-- Copy the web server help.  These files can be overwritten -->
       <copy todir="${path::combine(dir.delivery, 'ServerHelp')}" overwrite="true">
