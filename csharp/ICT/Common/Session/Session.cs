@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -29,7 +29,7 @@ using System.Threading;
 using System.Web.SessionState;
 using Ict.Common;
 
-namespace Ict.Common.Remoting.Server
+namespace Ict.Common.Session
 {
     /// <summary>
     /// Static class for storing sessions.
@@ -80,12 +80,16 @@ namespace Ict.Common.Remoting.Server
 
             if ((sessionID != string.Empty) && !FSessionObjects.ContainsKey(sessionID))
             {
+                // the client is using a session ID that is not valid anymore
+                // throw away current session id
+                InitThread(string.Empty);
+
                 if (HttpContext.Current != null)
                 {
                     HttpContext.Current.Request.Cookies.Remove("OpenPetraSessionID");
                 }
 
-                sessionID = FindSessionID();
+                sessionID = string.Empty;
             }
 
             if (sessionID == string.Empty)
@@ -179,6 +183,7 @@ namespace Ict.Common.Remoting.Server
             {
                 FSessionObjects.Remove(sessionId);
                 HttpContext.Current.Request.Cookies.Remove("OpenPetraSessionID");
+                HttpContext.Current.Response.Cookies.Remove("OpenPetraSessionID");
             }
         }
     }

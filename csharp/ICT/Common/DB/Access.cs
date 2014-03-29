@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,6 +39,7 @@ using Ict.Common.Exceptions;
 using Ict.Common.DB.DBCaching;
 using Ict.Common.DB.Exceptions;
 using Ict.Common.IO;
+using Ict.Common.Session;
 
 namespace Ict.Common.DB
 {
@@ -80,74 +81,18 @@ namespace Ict.Common.DB
         /// <summary>DebugLevel for tracing (most verbose log output): is 10 (was 4 before)</summary>
         public const Int32 DB_DEBUGLEVEL_TRACE = 10;
 
-        /// <summary>
-        /// store the current object for access to the database
-        /// </summary>
-        private static TDataBase MGDBAccessObj = null;
-
-        /// <summary>
-        /// delegate for setting the database object for this current session
-        /// </summary>
-        public delegate void DBAccessObjectSetter(TDataBase ADatabaseForUser);
-
-        /// <summary>
-        /// delegate for getting the database object for this current session
-        /// </summary>
-        public delegate TDataBase DBAccessObjectGetter(bool AOpenConnection = true);
-
-        private static DBAccessObjectSetter MGDBAccessObjDelegateSet = null;
-        private static DBAccessObjectGetter MGDBAccessObjDelegateGet = null;
-
-        /// we cannot have a reference to System.Web for Session here, so we use a delegate
-        public static void SetFunctionForRetrievingCurrentObjectFromWebSession(
-            DBAccessObjectSetter setter,
-            DBAccessObjectGetter getter)
-        {
-            MGDBAccessObjDelegateSet = setter;
-            MGDBAccessObjDelegateGet = getter;
-        }
-
         /// <summary>Global Object in which the Application can store a reference to an Instance of
         /// <see cref="TDataBase" /></summary>
         public static TDataBase GDBAccessObj
         {
             set
             {
-                if (MGDBAccessObjDelegateSet == null)
-                {
-                    MGDBAccessObj = value;
-                }
-                else
-                {
-                    MGDBAccessObjDelegateSet(value);
-                }
+                TSession.SetVariable("DBAccessObj", value);
             }
+
             get
             {
-                if (MGDBAccessObjDelegateGet == null)
-                {
-                    return MGDBAccessObj;
-                }
-                else
-                {
-                    return MGDBAccessObjDelegateGet();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Get Database object but don't establish it if it is not open yet;
-        /// this is useful for disconnetion when the version of client and server don't match
-        /// </summary>
-        public static TDataBase GetGDBAccessObjWithoutOpening()
-        {
-            if (MGDBAccessObjDelegateGet == null)
-            {
-                return MGDBAccessObj;
-            }
-            else
-            {
-                return MGDBAccessObjDelegateGet(false);
+                return (TDataBase)TSession.GetVariable("DBAccessObj");
             }
         }
     }

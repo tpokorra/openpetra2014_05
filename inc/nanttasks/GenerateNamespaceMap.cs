@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -307,6 +307,7 @@ namespace Ict.Tools.NAntTasks
 
                             if (Namespace.StartsWith("System.Web")
                                 && !Path.GetDirectoryName(filename).EndsWith("WebService")
+                                && !Path.GetDirectoryName(filename).EndsWith("Session")
                                 && !Path.GetDirectoryName(filename).EndsWith("Server")
                                 && !Path.GetDirectoryName(filename).EndsWith("RuntimeHost"))
                             {

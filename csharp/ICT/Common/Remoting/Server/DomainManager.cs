@@ -26,6 +26,7 @@ using System.Web;
 using System.Collections.Generic;
 using System.Threading;
 using Ict.Common;
+using Ict.Common.Session;
 
 namespace Ict.Common.Remoting.Server
 {
