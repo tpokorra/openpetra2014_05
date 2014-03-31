@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -262,6 +262,13 @@ namespace Ict.Testing.NUnitTools
         /// </summary>
         public static void StartOpenPetraServer(string AParameters = "")
         {
+            string ServerURL = TAppSettingsManager.GetValue("OpenPetra.HTTPServer");
+
+            if (ServerURL.IndexOf(":") != -1)
+            {
+                AParameters += " -D:Server.Port=" + ServerURL.Substring(ServerURL.IndexOf(":") + 1);
+            }
+
             CommonNUnitFunctions.nant("startServer " + AParameters, false);
             // wait a few seconds, otherwise the client will not connect
             Thread.Sleep(Convert.ToInt32(TimeSpan.FromSeconds(5.0).TotalMilliseconds));
