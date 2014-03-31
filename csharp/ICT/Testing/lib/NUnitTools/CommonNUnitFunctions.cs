@@ -262,13 +262,6 @@ namespace Ict.Testing.NUnitTools
         /// </summary>
         public static void StartOpenPetraServer(string AParameters = "")
         {
-            string ServerURL = TAppSettingsManager.GetValue("OpenPetra.HTTPServer");
-
-            if (ServerURL.IndexOf(":") != -1)
-            {
-                AParameters += " -D:Server.Port=" + ServerURL.Substring(ServerURL.IndexOf(":") + 1);
-            }
-
             CommonNUnitFunctions.nant("startServer " + AParameters, false);
             // wait a few seconds, otherwise the client will not connect
             Thread.Sleep(Convert.ToInt32(TimeSpan.FromSeconds(5.0).TotalMilliseconds));
