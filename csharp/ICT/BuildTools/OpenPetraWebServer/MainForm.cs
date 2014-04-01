@@ -4,7 +4,7 @@
 // @Authors:
 //       alanp
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,7 +32,7 @@ using Ict.Tools.OpenPetraRuntimeHost;
 
 namespace Ict.Tools.OpenPetraWebServer
 {
-    /// <summary>    
+    /// <summary>
     /// This class is the main multi-site UI for the Open Petra Web Server application.
     ///
     /// The application as a whole integrates with the Microsoft Cassini web server code

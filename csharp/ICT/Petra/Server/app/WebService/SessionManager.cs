@@ -37,6 +37,7 @@ using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.DB;
 using Ict.Common.IO;
+using Ict.Common.Session;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
@@ -110,12 +111,6 @@ namespace Ict.Petra.Server.App.WebService
 
             if (TServerManager.TheServerManager == null)
             {
-                DBAccess.SetFunctionForRetrievingCurrentObjectFromWebSession(SetDatabaseForSession,
-                    GetDatabaseFromSession);
-
-                UserInfo.SetFunctionForRetrievingCurrentObjectFromWebSession(SetUserInfoForSession,
-                    GetUserInfoFromSession);
-
                 Catalog.Init();
 
                 TServerManager.TheServerManager = new TServerManager();
@@ -172,6 +167,11 @@ namespace Ict.Petra.Server.App.WebService
             AWelcomeMessage = string.Empty;
             AClientID = -1;
 
+            if (DBAccess.GDBAccessObj == null)
+            {
+                TServerManager.TheCastedServerManager.EstablishDBConnection();
+            }
+
             try
             {
                 TConnectedClient CurrentClient = TClientManager.ConnectClient(
@@ -202,14 +202,13 @@ namespace Ict.Petra.Server.App.WebService
                 TLogging.Log(e.Message);
                 TLogging.Log(e.StackTrace);
                 TSession.SetVariable("LoggedIn", false);
-                TDataBase db = DBAccess.GetGDBAccessObjWithoutOpening();
 
-                if (db != null)
+                if (DBAccess.GDBAccessObj != null)
                 {
-                    db.CloseDBConnection();
+                    DBAccess.GDBAccessObj.CloseDBConnection();
                 }
 
-                Session.Clear();
+                TSession.Clear();
                 return TClientManager.LoginErrorFromException(e);
             }
         }
@@ -364,7 +363,14 @@ namespace Ict.Petra.Server.App.WebService
         {
             TLogging.Log("Logout from a session", TLoggingType.ToLogfile | TLoggingType.ToConsole);
 
-            DomainManager.CurrentClient.EndSession();
+            if (DomainManager.CurrentClient == null)
+            {
+                TSession.Clear();
+            }
+            else
+            {
+                DomainManager.CurrentClient.EndSession();
+            }
 
             return true;
         }

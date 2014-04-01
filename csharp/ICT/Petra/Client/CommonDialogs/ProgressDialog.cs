@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -101,7 +101,14 @@ namespace Ict.Petra.Client.CommonDialogs
 
             if (CancelConfirmationResult == DialogResult.Yes)
             {
-                TRemote.MCommon.WebConnectors.CancelJob();
+                try
+                {
+                    TRemote.MCommon.WebConnectors.CancelJob();
+                }
+                catch (Exception ex)
+                {
+                    TLogging.Log("while cancelling, we got " + e.ToString());
+                }
 
                 this.DialogResult = DialogResult.Cancel;
 

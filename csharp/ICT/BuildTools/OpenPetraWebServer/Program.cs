@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       alanp
+//       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -178,7 +179,8 @@ namespace Ict.Tools.OpenPetraWebServer
         }
 
         /// <summary>
-        /// Returns true if the specified port is in use
+        /// Returns true if the specified port is in use;
+        /// only checking IPv4 loopback address for now
         /// </summary>
         static public bool PortIsInUse(int PortNumber, bool DisallowHelpPort)
         {
@@ -189,7 +191,8 @@ namespace Ict.Tools.OpenPetraWebServer
 
             bool inUse = false;
 
-            IPAddress ipAddress = Dns.GetHostEntry("localhost").AddressList[0];
+            IPAddress ipAddress = IPAddress.Loopback;
+
             try
             {
                 TcpListener tcpListener = new TcpListener(ipAddress, PortNumber);

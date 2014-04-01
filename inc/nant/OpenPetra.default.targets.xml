@@ -131,14 +131,14 @@
           tofile="${path::combine(dir.bin, 'Mono.Security.dll')}"
           overwrite="false"/>
 
-      <!-- Copy the two web server files but do not overwrite because they may be running -->
+      <!-- Copy the two web server files but do not overwrite because they may be running; also don't fail on error -->
       <copy file="${path::combine(dir.delivery, 'bin/Ict.Tools.OpenPetraWebServer.exe')}"
           tofile="${path::combine(dir.delivery, 'Ict.Tools.OpenPetraWebServer.exe')}" 
-          overwrite="false"/>
+          overwrite="false" failonerror="false"/>
 
       <copy file="${path::combine(dir.delivery, 'bin/Ict.Tools.OpenPetraRuntimeHost.dll')}"
           tofile="${path::combine(dir.delivery, 'Ict.Tools.OpenPetraRuntimeHost.dll')}" 
-          overwrite="false"/>
+          overwrite="false" failonerror="false"/>
 
       <!-- Copy the web server help.  These files can be overwritten -->
       <copy todir="${path::combine(dir.delivery, 'ServerHelp')}" overwrite="true">
@@ -155,13 +155,12 @@
 &lt;/configuration>
 </echo>
       <!-- maximum runtime of server, eg. on Jenkins, so that the workspace is not blocked forever if the server cannot be stopped -->
-      <property name="TinyServer.MaximumRuntime.InMinutes" value="120" overwrite="false"/>
-      <echo message="starting: Ict.Tools.TinyWebServer.exe ${Server.Port} &quot;${dir.log}\Ict.Tools.WebServer.log&quot; ${TinyServer.MaximumRuntime.InMinutes}"/>
+      <echo message="starting: Ict.Tools.OpenPetraWebServer.exe ${dir.delivery} /p ${Server.Port} /q"/>
       <exec program="cmd.exe" 
               workingdir="${dir.delivery}"
               spawn="true">
            <arg value="/c" />
-           <arg value="start Ict.Tools.OpenPetraWebServer.exe  ${dir.delivery}  /p  ${Server.Port}  /q" />
+           <arg value="start Ict.Tools.OpenPetraWebServer.exe ${dir.delivery} /p ${Server.Port} /q" />
       </exec>
     </if>
   </if>

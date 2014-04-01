@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -25,46 +25,93 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Web;
+using System.Threading;
+using System.Web.SessionState;
 using Ict.Common;
 
-namespace Ict.Common.Remoting.Server
+namespace Ict.Common.Session
 {
     /// <summary>
     /// Static class for storing sessions.
     /// we are using our own session handling,
-    /// since the .net sessions cannot handle concurrent requests in one session if there is a write block
+    /// since the mono server cannot handle concurrent requests in one session
+    /// see also http://serverfault.com/questions/324033/how-do-i-get-concurrent-asp-net-on-linux
     /// </summary>
     public class TSession
     {
         private static SortedList <string, SortedList <string, object>>FSessionObjects = new SortedList <string, SortedList <string, object>>();
 
-        private static string GetSessionID()
+        [ThreadStaticAttribute]
+        private static string FSessionID;
+
+        /// get the current session id. if it is not stored in the http context, check the thread
+        private static string FindSessionID()
         {
-            if (HttpContext.Current.Request.Cookies["OpenPetraSessionID"] != null)
+            if ((HttpContext.Current != null) && (HttpContext.Current.Request.Cookies["OpenPetraSessionID"] != null))
             {
                 return HttpContext.Current.Request.Cookies["OpenPetraSessionID"].Value;
+            }
+
+            string sessionId = FSessionID;
+
+            if ((sessionId != null) && (sessionId.Length > 0))
+            {
+                return sessionId;
             }
 
             return string.Empty;
         }
 
-        private static SortedList <string, object>GetSession()
+        /// <summary>
+        /// set the session id for this current thread
+        /// </summary>
+        /// <param name="ASessionID"></param>
+        public static void InitThread(string ASessionID)
         {
-            string sessionID = GetSessionID();
+            FSessionID = ASessionID;
+        }
+
+        /// <summary>
+        /// gets the current session id, or creates a new session id if it does not exist yet
+        /// </summary>
+        public static string GetSessionID()
+        {
+            string sessionID = FindSessionID();
 
             if ((sessionID != string.Empty) && !FSessionObjects.ContainsKey(sessionID))
             {
-                HttpContext.Current.Request.Cookies.Remove("OpenPetraSessionID");
-                sessionID = GetSessionID();
+                // the client is using a session ID that is not valid anymore
+                // throw away current session id
+                InitThread(string.Empty);
+
+                if (HttpContext.Current != null)
+                {
+                    HttpContext.Current.Request.Cookies.Remove("OpenPetraSessionID");
+                }
+
+                sessionID = string.Empty;
             }
 
             if (sessionID == string.Empty)
             {
                 sessionID = Guid.NewGuid().ToString();
-                HttpContext.Current.Request.Cookies.Add(new HttpCookie("OpenPetraSessionID", sessionID));
-                HttpContext.Current.Response.Cookies.Add(new HttpCookie("OpenPetraSessionID", sessionID));
+
+                if (HttpContext.Current != null)
+                {
+                    HttpContext.Current.Request.Cookies.Add(new HttpCookie("OpenPetraSessionID", sessionID));
+                    HttpContext.Current.Response.Cookies.Add(new HttpCookie("OpenPetraSessionID", sessionID));
+                }
+
                 FSessionObjects.Add(sessionID, new SortedList <string, object>());
+                InitThread(sessionID);
             }
+
+            return sessionID;
+        }
+
+        private static SortedList <string, object>GetSession()
+        {
+            string sessionID = GetSessionID();
 
             return FSessionObjects[sessionID];
         }
@@ -136,6 +183,7 @@ namespace Ict.Common.Remoting.Server
             {
                 FSessionObjects.Remove(sessionId);
                 HttpContext.Current.Request.Cookies.Remove("OpenPetraSessionID");
+                HttpContext.Current.Response.Cookies.Remove("OpenPetraSessionID");
             }
         }
     }

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -80,12 +80,7 @@ public class TOpenPetraOrg : WebService
         new TSrvSetting();
         new TLogging(TSrvSetting.ServerLogFile);
         TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
-
-        DBAccess.SetFunctionForRetrievingCurrentObjectFromWebSession(SetDatabaseForSession,
-            GetDatabaseFromSession);
-
-        UserInfo.SetFunctionForRetrievingCurrentObjectFromWebSession(SetUserInfoForSession,
-            GetUserInfoFromSession);
+        RefreshDatabaseConnection(true);
     }
 
     /// <summary>Initialise the server; this can only be called once, after that it will have no effect;
@@ -157,9 +152,9 @@ public class TOpenPetraOrg : WebService
         return loggedIn;
     }
 
-    private TDataBase GetDatabaseFromSession(bool AOpenConnection = true)
+    private void RefreshDatabaseConnection(bool AOpenConnection = true)
     {
-        if (HttpContext.Current.Session["DBAccessObj"] == null)
+        if (DBAccess.GDBAccessObj == null)
         {
             if (TheServerManager == null)
             {
@@ -180,23 +175,6 @@ public class TOpenPetraOrg : WebService
                 }
             }
         }
-
-        return (TDataBase)HttpContext.Current.Session["DBAccessObj"];
-    }
-
-    private void SetDatabaseForSession(TDataBase database)
-    {
-        HttpContext.Current.Session["DBAccessObj"] = database;
-    }
-
-    private TPetraPrincipal GetUserInfoFromSession()
-    {
-        return (TPetraPrincipal)HttpContext.Current.Session["UserInfo"];
-    }
-
-    private void SetUserInfoForSession(TPetraPrincipal userinfo)
-    {
-        HttpContext.Current.Session["UserInfo"] = userinfo;
     }
 
     /// <summary>check if the user has logged in successfully</summary>

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.Web;
 using System.Collections.Generic;
 using System.Threading;
 using Ict.Common;
+using Ict.Common.Session;
 
 namespace Ict.Common.Remoting.Server
 {
@@ -37,9 +38,6 @@ namespace Ict.Common.Remoting.Server
         /// <summary>used internally to hold SiteKey Information (for convenience)</summary>
         public static Int64 GSiteKey;
 
-        private static SortedList <string, Int32>ClientIDsPerThread = new SortedList <string, int>();
-        private static SortedList <string, TConnectedClient>CurrentClientPerThread = new SortedList <string, TConnectedClient>();
-
         /// <summary>
         /// get the ClientID of the current session
         /// </summary>
@@ -47,46 +45,18 @@ namespace Ict.Common.Remoting.Server
         {
             get
             {
-                if (HttpContext.Current == null)
+                if (TSession.HasVariable("ClientID"))
                 {
-                    if (!ClientIDsPerThread.ContainsKey(Thread.CurrentThread.Name))
-                    {
-                        string message = "DomainManager.GClientID is not set in thread " + Thread.CurrentThread.Name;
-                        TLogging.Log(message);
-                        return 0;
-                    }
-
-                    return ClientIDsPerThread[Thread.CurrentThread.Name];
+                    string ClientID = TSession.GetVariable("ClientID").ToString();
+                    return Convert.ToInt32(ClientID);
                 }
-                else
-                {
-                    if (TSession.HasVariable("ClientID"))
-                    {
-                        string ClientID = TSession.GetVariable("ClientID").ToString();
-                        return Convert.ToInt32(ClientID);
-                    }
 
-                    throw new Exception("invalid session, does not have a client ID");
-                }
+                throw new Exception("invalid session, does not have a client ID");
             }
 
             set
             {
-                if (HttpContext.Current == null)
-                {
-                    if (ClientIDsPerThread.ContainsKey(Thread.CurrentThread.Name))
-                    {
-                        ClientIDsPerThread[Thread.CurrentThread.Name] = value;
-                    }
-                    else
-                    {
-                        ClientIDsPerThread.Add(Thread.CurrentThread.Name, value);
-                    }
-                }
-                else
-                {
-                    TSession.SetVariable("ClientID", value);
-                }
+                TSession.SetVariable("ClientID", value);
             }
         }
 
@@ -97,40 +67,12 @@ namespace Ict.Common.Remoting.Server
         {
             get
             {
-                if (HttpContext.Current == null)
-                {
-                    if (!CurrentClientPerThread.ContainsKey(Thread.CurrentThread.Name))
-                    {
-                        string message = "DomainManager.CurrentClient is not set in thread " + Thread.CurrentThread.Name;
-                        TLogging.Log(message);
-                        return null;
-                    }
-
-                    return CurrentClientPerThread[Thread.CurrentThread.Name];
-                }
-                else
-                {
-                    return (TConnectedClient)TSession.GetVariable("ConnectedClient");
-                }
+                return (TConnectedClient)TSession.GetVariable("ConnectedClient");
             }
 
             set
             {
-                if (HttpContext.Current == null)
-                {
-                    if (CurrentClientPerThread.ContainsKey(Thread.CurrentThread.Name))
-                    {
-                        CurrentClientPerThread[Thread.CurrentThread.Name] = value;
-                    }
-                    else
-                    {
-                        CurrentClientPerThread.Add(Thread.CurrentThread.Name, value);
-                    }
-                }
-                else
-                {
-                    TSession.SetVariable("ConnectedClient", value);
-                }
+                TSession.SetVariable("ConnectedClient", value);
             }
         }
     }
