@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -154,11 +154,6 @@ namespace Ict.Common
             if (Path.GetFullPath(AFileName) == TLogWriter.GetLogFileName())
             {
                 return;
-            }
-
-            if (Path.GetDirectoryName(Path.GetFullPath(AFileName)) == TAppSettingsManager.ApplicationDirectory)
-            {
-                throw new Exception("TLogging: invalid log file " + AFileName + ". SimpleHost.exe fails when file is written in the bin directory");
             }
 
             TLogging.Context = "";

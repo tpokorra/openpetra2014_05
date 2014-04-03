@@ -31,6 +31,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using Ict.Common;
 
 namespace Ict.Tools.OpenPetraWebServer
 {
@@ -103,8 +104,13 @@ namespace Ict.Tools.OpenPetraWebServer
         [STAThread]
         static void Main(string[] args)
         {
+            new TAppSettingsManager(false);
+            new TLogging("Ict.Tools.OpenPetraWebServer.log");
+
             if (args.Length == 0)
             {
+                TLogging.Log("There are no command line parameters");
+
                 // Find out if there is an existing instance
                 Process curProcess = Process.GetCurrentProcess();
                 Process[] RunningProcesses = System.Diagnostics.Process.GetProcessesByName(curProcess.ProcessName);
@@ -132,6 +138,8 @@ namespace Ict.Tools.OpenPetraWebServer
                         // We need to activate the other app
                         SendMessage(hWnd, UM_ACTIVATE_APP, IntPtr.Zero, IntPtr.Zero);
                     }
+
+                    TLogging.Log("there is already another process with application title " + APPLICATION_TITLE);
                 }
             }
             else
@@ -145,20 +153,25 @@ namespace Ict.Tools.OpenPetraWebServer
                     // Check if the port is available
                     if (PortIsInUse(commandLineArgs.Port, true))
                     {
-                        // Show a message box unless /q
+                        string msg =
+                            "The port you have specified is in use.  Check the System Tray to see if an instance of the web server is already running.";
+
+                        // Show a message box unless -quiet:true
                         if (!commandLineArgs.SuppressStartupMessages)
                         {
                             System.Windows.Forms.MessageBox.Show(
-                                "The port you have specified is in use.  Check the System Tray to see if an instance of the web server is already running.",
+                                msg,
                                 APPLICATION_TITLE,
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Exclamation);
                         }
 
                         // Now we just quit without starting anything
+                        TLogging.Log(msg);
                     }
                     else
                     {
+                        TLogging.Log("Ict.Tools.OpenPetraWebServer is now running on port " + commandLineArgs.Port.ToString() + "...");
                         Application.EnableVisualStyles();
                         Application.SetCompatibleTextRenderingDefault(false);
                         Application.Run(new SmallUIForm(commandLineArgs.PhysicalPath,
@@ -171,11 +184,14 @@ namespace Ict.Tools.OpenPetraWebServer
                 else
                 {
                     // Command line is invalid so we will use the Command Line Help form
+                    TLogging.Log("The command line arguments don't make sense! " + Environment.CommandLine);
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
                     Application.Run(new CommandLineHelp());
                 }
             }
+
+            TLogging.Log("Ict.Tools.OpenPetraWebServer has finished");
         }
 
         /// <summary>

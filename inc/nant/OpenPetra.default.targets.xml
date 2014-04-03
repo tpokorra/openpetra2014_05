@@ -140,6 +140,10 @@
           tofile="${path::combine(dir.delivery, 'Ict.Tools.OpenPetraRuntimeHost.dll')}" 
           overwrite="false" failonerror="false"/>
 
+      <copy file="${path::combine(dir.delivery, 'bin/Ict.Common.dll')}"
+          tofile="${path::combine(dir.delivery, 'Ict.Common.dll')}" 
+          overwrite="false" failonerror="false"/>
+
       <!-- Copy the web server help.  These files can be overwritten -->
       <copy todir="${path::combine(dir.delivery, 'ServerHelp')}" overwrite="true">
         <fileset basedir="${dir.csharp}/ICT/BuildTools/OpenPetraWebServer/ServerHelp/">
@@ -154,13 +158,12 @@
     &lt;/startup>
 &lt;/configuration>
 </echo>
-      <!-- maximum runtime of server, eg. on Jenkins, so that the workspace is not blocked forever if the server cannot be stopped -->
-      <echo message="starting: Ict.Tools.OpenPetraWebServer.exe ${dir.delivery} /p ${Server.Port} /q"/>
+      <echo message="starting: Ict.Tools.OpenPetraWebServer.exe -physicalPath:&quot;${dir.delivery}&quot; -port:${Server.Port} -quiet:true"/>
       <exec program="cmd.exe" 
               workingdir="${dir.delivery}"
               spawn="true">
            <arg value="/c" />
-           <arg value="start Ict.Tools.OpenPetraWebServer.exe ${dir.delivery} /p ${Server.Port} /q" />
+           <arg value="start Ict.Tools.OpenPetraWebServer.exe -physicalPath:&quot;${dir.delivery}&quot; -port:${Server.Port} -quiet:true" />
       </exec>
     </if>
   </if>

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       alanp
+//       alanp, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using Ict.Common;
 
 namespace Ict.Tools.OpenPetraWebServer
 {
@@ -35,7 +36,7 @@ namespace Ict.Tools.OpenPetraWebServer
         /// The command line can be blank - in which case the full UI is used
         /// or it can have parameters as follows - in which case the simplified UI is shown with one instance per port
         ///
-        /// "path-to-exe" "fully-qualified-physical-path" /p portNumber [/v virtualPath] [/d defaultPage] [/r] [/q]
+        /// "path-to-exe" -physicalPath:"fully-qualified-physical-path" -port:portNumber [-virtualPath:virtualPath] [-defaultPage:defaultPage] [-r:true] [-quiet:true]
 
 
         private string _physicalPath = string.Empty;
@@ -85,76 +86,20 @@ namespace Ict.Tools.OpenPetraWebServer
 
         public CommandLineArgs(string[] args)
         {
-            char nextArg = ' ';
-
-            for (int i = 0; i < args.Length; i++)
-            {
-                string arg = args[i];
-                int tryInt = -1;
-
-                switch (nextArg)
-                {
-                    case 'v':
-                        _virtualPath = arg;
-                        nextArg = ' ';
-                        break;
-
-                    case 'd':
-                        _defaultPage = arg;
-                        nextArg = ' ';
-                        break;
-
-                    case 'p':
-
-                        if (Int32.TryParse(arg, out tryInt) && (tryInt >= 80) && (tryInt <= 65535))
-                        {
-                            _port = tryInt;
-                        }
-
-                        nextArg = ' ';
-                        break;
-
-                    default:
-
-                        if (arg.StartsWith("/"))
-                        {
-                            if (arg[1] == 'r')
-                            {
-                                _acceptRemoteConnection = true;
-                            }
-                            else if (arg[1] == 'q')
-                            {
-                                _suppressStartUpMessages = true;
-                            }
-                            else
-                            {
-                                nextArg = arg[1];
-                            }
-                        }
-                        else
-                        {
-                            // this must be the physical path
-                            _physicalPath = arg;
-                        }
-
-                        break;
-                }
-            }
+            _physicalPath = TAppSettingsManager.GetValue("physicalPath", string.Empty, false);;
+            _virtualPath = TAppSettingsManager.GetValue("virtualPath", string.Empty, false);
+            _defaultPage = TAppSettingsManager.GetValue("defaultPage", string.Empty, false);
+            _port = TAppSettingsManager.GetInt16("port", 8080);
+            _acceptRemoteConnection = TAppSettingsManager.GetBoolean("acceptRemoteConnection", false);
+            _suppressStartUpMessages = TAppSettingsManager.GetBoolean("quiet", false);
         }
 
         public bool IsValid
         {
             get
             {
-                bool isValid = (_physicalPath != string.Empty && _port >= 80);
-
-                if (isValid)
-                {
-                    if (!Directory.Exists(_physicalPath))
-                    {
-                        return false;
-                    }
-                }
+                bool isValid = (_physicalPath != string.Empty && _port >= 80
+                                && Directory.Exists(_physicalPath));
 
                 return isValid;
             }
