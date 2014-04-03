@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,6 +43,7 @@ using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Printing;
 using Ict.Common.Verification;
+using Ict.Common.Session;
 using Ict.Petra.Shared.MCommon;
 
 namespace Ict.Petra.Server.MReporting.UIConnectors
@@ -95,7 +96,11 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
 
             // setup the logging to go to the TProgressTracker
             TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusBar));
-            Thread TheThread = new Thread(new ThreadStart(Run));
+            string session = TSession.GetSessionID();
+            ThreadStart myThreadStart = delegate {
+                Run(session);
+            };
+            Thread TheThread = new Thread(myThreadStart);
             TheThread.Name = FProgressID;
             TheThread.CurrentCulture = Thread.CurrentThread.CurrentCulture;
             TheThread.Start();
@@ -113,8 +118,10 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         /// <summary>
         /// run the report
         /// </summary>
-        private void Run()
+        private void Run(string ASessionID)
         {
+            // need to initialize the database session
+            TSession.InitThread(ASessionID);
             try
             {
                 if (FParameterList.Get("IsolationLevel").ToString().ToLower() == "readuncommitted")
