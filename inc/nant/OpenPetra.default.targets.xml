@@ -158,12 +158,15 @@
     &lt;/startup>
 &lt;/configuration>
 </echo>
-      <echo message="starting: Ict.Tools.OpenPetraWebServer.exe -physicalPath:&quot;${dir.delivery}&quot; -port:${Server.Port} -quiet:true"/>
+      <!-- maximum runtime of server, eg. on Jenkins, so that the workspace is not blocked forever if the server cannot be stopped -->
+      <property name="WebServer.MaximumRuntime.InMinutes" value="120" overwrite="false"/>
+      <property name="WebServer.StartCommandLine" value="Ict.Tools.OpenPetraWebServer.exe -physicalPath:&quot;${dir.delivery}&quot; -port:${Server.Port} -quiet:true -maxRuntimeInMinutes:${WebServer.MaximumRuntime.InMinutes}" overwrite="false"/>
+      <echo message="starting: ${WebServer.StartCommandLine}"/>
       <exec program="cmd.exe" 
               workingdir="${dir.delivery}"
               spawn="true">
            <arg value="/c" />
-           <arg value="start Ict.Tools.OpenPetraWebServer.exe -physicalPath:&quot;${dir.delivery}&quot; -port:${Server.Port} -quiet:true" />
+           <arg value="start ${WebServer.StartCommandLine}" />
       </exec>
     </if>
   </if>

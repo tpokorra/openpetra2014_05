@@ -45,6 +45,7 @@ namespace Ict.Tools.OpenPetraWebServer
         private bool _acceptRemoteConnection = false;
         private string _defaultPage = string.Empty;
         private bool _suppressStartUpMessages = false;
+        private Int16 _maxRuntimeInMinutes = -1;
 
         public string PhysicalPath {
             get
@@ -82,7 +83,12 @@ namespace Ict.Tools.OpenPetraWebServer
                 return _suppressStartUpMessages;
             }
         }
-
+        public Int16 MaxRuntimeInMinutes {
+            get
+            {
+                return _maxRuntimeInMinutes;
+            }
+        }
 
         public CommandLineArgs(string[] args)
         {
@@ -92,6 +98,7 @@ namespace Ict.Tools.OpenPetraWebServer
             _port = TAppSettingsManager.GetInt16("port", 8080);
             _acceptRemoteConnection = TAppSettingsManager.GetBoolean("acceptRemoteConnection", false);
             _suppressStartUpMessages = TAppSettingsManager.GetBoolean("quiet", false);
+            _maxRuntimeInMinutes = TAppSettingsManager.GetInt16("maxRuntimeInMinutes", -1);
         }
 
         public bool IsValid

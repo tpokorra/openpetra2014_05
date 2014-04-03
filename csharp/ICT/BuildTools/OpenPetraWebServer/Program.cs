@@ -31,6 +31,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using System.Threading;
 using Ict.Common;
 
 namespace Ict.Tools.OpenPetraWebServer
@@ -97,6 +98,8 @@ namespace Ict.Tools.OpenPetraWebServer
         static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
         [DllImport("User32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr SendMessage(IntPtr hwnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+        private static Form myForm = null;
 
         /// <summary>
         /// The main entry point for the application.
@@ -171,14 +174,25 @@ namespace Ict.Tools.OpenPetraWebServer
                     }
                     else
                     {
+                        if (commandLineArgs.MaxRuntimeInMinutes > 0)
+                        {
+                            // start a thread that will stop this server after the given time
+                            ThreadStart stopThread = delegate {
+                                StopApplication(commandLineArgs.MaxRuntimeInMinutes);
+                            };
+                            new Thread(stopThread).Start();
+                        }
+
                         TLogging.Log("Ict.Tools.OpenPetraWebServer is now running on port " + commandLineArgs.Port.ToString() + "...");
+                        TLogging.Log("    Command line was: " + Environment.CommandLine);
                         Application.EnableVisualStyles();
                         Application.SetCompatibleTextRenderingDefault(false);
-                        Application.Run(new SmallUIForm(commandLineArgs.PhysicalPath,
-                                commandLineArgs.VirtualPath,
-                                commandLineArgs.Port,
-                                commandLineArgs.DefaultPage,
-                                commandLineArgs.AcceptRemoteConnection));
+                        myForm = new SmallUIForm(commandLineArgs.PhysicalPath,
+                            commandLineArgs.VirtualPath,
+                            commandLineArgs.Port,
+                            commandLineArgs.DefaultPage,
+                            commandLineArgs.AcceptRemoteConnection);
+                        Application.Run(myForm);
                     }
                 }
                 else
@@ -192,6 +206,19 @@ namespace Ict.Tools.OpenPetraWebServer
             }
 
             TLogging.Log("Ict.Tools.OpenPetraWebServer has finished");
+        }
+
+        static private void StopApplication(Int16 AStopAfterMinutes)
+        {
+            Thread.Sleep(TimeSpan.FromMinutes(AStopAfterMinutes));
+            TLogging.Log("quitting the Webserver due to time out, after " + AStopAfterMinutes.ToString() + " minutes");
+
+            if (myForm != null)
+            {
+                myForm.Close();
+            }
+
+            Environment.Exit(1);
         }
 
         /// <summary>
