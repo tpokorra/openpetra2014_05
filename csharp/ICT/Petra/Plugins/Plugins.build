@@ -26,7 +26,7 @@
 
   <!-- TODO for each plugin -->
   <property name="MyPlugin" value="ConferenceRegistrationFees"/>
-  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateGlue.exe" commandline="-plugin:Ict.Petra.Plugins.${MyPlugin} -pluginpath=${dir.root}/csharp/ICT/Petra/Plugins/${MyPlugin} -TemplateDir:${dir.incdir.template.src} -compileForStandalone:${compileForStandalone}"/>
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateGlue.exe" commandline="-plugin:Ict.Petra.Plugins.${MyPlugin} -plugindir:${dir.root}/csharp/ICT/Petra/Plugins/${MyPlugin} -TemplateDir:${dir.incdir.template.src} -compileForStandalone:${compileForStandalone}"/>
 
 </target>
 
