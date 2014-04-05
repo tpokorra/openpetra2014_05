@@ -4,6 +4,7 @@
 *-generated.Designer.cs
 csharp/ICT/Petra/Client/generatewinforms.log
 csharp/ICT/Petra/PetraClient/generatewinforms.log
+csharp/ICT/Petra/Plugins/*
 setup/petra0300/dbdoc
 setup/petra0300/i18n
 setup/petra0300/ndoc

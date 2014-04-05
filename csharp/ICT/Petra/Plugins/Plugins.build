@@ -15,10 +15,13 @@
   <property name="StartTableId" value="9000"/>
   <foreach item="Folder" property="foldername" in="${dir.root}/csharp/ICT/Petra/Plugins/">
     <property name="MyPlugin" value="${path::get-file-name(foldername)}"/>
-    <!-- generate typed datasets. no DataAccess, no Validation -->
-    <ExecDotNet program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Plugins/${MyPlugin}/data/TypedDataSets.xml -outputNamespace:Ict.Petra.Plugins.${MyPlugin}.Data -outputdir:${dir.root}/csharp/ICT/Petra/Plugins/${MyPlugin}/data -outputFilename:${MyPlugin}.DataSets -StartTableId:${StartTableId}
- -TemplateDir:${dir.incdir.template.src}"/>
-    <property name="StartTableId" value="${int::parse(StartTableId) + 100}"/>
+    <property name="typedatasetsfile" value="${dir.root}/csharp/ICT/Petra/Plugins/${MyPlugin}/data/TypedDataSets.xml"/>
+    <if test="${file::exists(typedatasetsfile)}">
+        <!-- generate typed datasets. no DataAccess, no Validation -->
+        <ExecDotNet program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${typedatasetsfile} -outputNamespace:Ict.Petra.Plugins.${MyPlugin}.Data -outputdir:${dir.root}/csharp/ICT/Petra/Plugins/${MyPlugin}/data -outputFilename:${MyPlugin}.DataSets -StartTableId:${StartTableId}
+     -TemplateDir:${dir.incdir.template.src}"/>
+        <property name="StartTableId" value="${int::parse(StartTableId) + 100}"/>
+    </if>
   </foreach>
 </target>
 

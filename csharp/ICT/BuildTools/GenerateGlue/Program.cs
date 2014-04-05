@@ -163,8 +163,8 @@ namespace Ict.Tools.GenerateGlue
 
                 if (namespaceRoot.Children.Count < 1)
                 {
-                    Console.WriteLine("problems with parsing namespaces from " + AOutputDir + "/Server/");
-                    Environment.Exit(-1);
+                    Console.WriteLine("There are no connectors in " + AOutputDir + "/Server/");
+                    return;
                 }
             }
             catch (Exception e)
