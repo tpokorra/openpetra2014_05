@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<project name="Plugins-Build">
+
+<target name="custdepend">
+  <!-- Generate winforms --> 
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -Server.DebugLevel:${Server.DebugLevel}"/>
+  <property name="ClientPath" value="${dir.root}/csharp/ICT/Petra/Plugins"/>
+  <ExecDotNet program="${tool-generateWinForms}" commandline="-op:generate -ymldir:${ClientPath} ${generateWinformsParameters}"/>
+</target>
+
+<target name="custdependORM">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
+
+  <!-- TODO for each plugin -->
+  <property name="MyPlugin" value="ConferenceRegistrationFees"/>
+  <!-- generate typed datasets. no DataAccess, no Validation -->
+  <!-- TODO: StartTableId: somehow based on the pluginname? or take it from the xml file? -->
+  <ExecDotNet program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Plugins/${MyPlugin}/data/TypedDataSets.xml -outputNamespace:Ict.Petra.Plugins.${MyPlugin}.Data -outputdir:${dir.root}/csharp/ICT/Petra/Plugins/${MyPlugin}/data -outputFilename:${MyPlugin}.DataSets -StartTableId:9000
+ -TemplateDir:${dir.incdir.template.src}"/>
+
+</target>
+
+<target name="custdependGlue">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
+
+  <!-- TODO for each plugin -->
+  <property name="MyPlugin" value="ConferenceRegistrationFees"/>
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateGlue.exe" commandline="-plugin:Ict.Petra.Plugins.${MyPlugin} -pluginpath=${dir.root}/csharp/ICT/Petra/Plugins/${MyPlugin} -TemplateDir:${dir.incdir.template.src} -compileForStandalone:${compileForStandalone}"/>
+
+</target>
+
+<target name="generateWinform">
+  <!-- Generate winforms -->
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -Server.DebugLevel:${Server.DebugLevel}"/>
+  <property name="file_fullpath" value="${path::get-full-path(file)}"/>
+  <ExecDotNet program="${tool-generateWinForms}" commandline="-op:generate -ymlfile:${file_fullpath} ${generateWinformsParameters}"/>
+  
+  <property name="file_fullpath" value="${path::get-full-path(file)}"/>
+  <CompileProject CSFile="${string::replace(file_fullpath,'.yaml', '-generated.cs')}" ProjectFilesDir="${dir.projectfiles}/${devenv-msbuild}" CodeRootDir="${dir.csharp}"/>
+</target>
+
+<target name="previewWinform">
+  <!-- Generate winforms -->
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -Server.DebugLevel:${Server.DebugLevel}"/>
+  <property name="file_fullpath" value="${path::get-full-path(file)}"/>
+  <ExecDotNet program="${tool-generateWinForms}" commandline="-op:preview -ymlfile:${file_fullpath} ${generateWinformsParameters}"/>
+</target>
+
+<include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
+
+</project>

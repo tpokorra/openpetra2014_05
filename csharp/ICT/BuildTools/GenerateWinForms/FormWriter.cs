@@ -1163,7 +1163,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // load the dataset if there is a dataset defined for this screen. this allows us to reference customtables and custom fields
             if (FCodeStorage.HasAttribute("DatasetType"))
             {
-                DataSetTables = TDataBinding.LoadDatasetTables(CSParser.ICTPath, FCodeStorage.GetAttribute("DatasetType"), FCodeStorage);
+                // also check the plugin directory of the yaml file, for plugins can have a file TypedDataSets.xml
+                string PluginPath =
+                    (AXAMLFilename.Contains("Plugins")) ?
+                    Path.GetFullPath(Path.GetDirectoryName(
+                            AXAMLFilename) + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + "TypedDataSets.xml")
+                    : string.Empty;
+
+                DataSetTables = TDataBinding.LoadDatasetTables(CSParser.ICTPath, FCodeStorage.GetAttribute("DatasetType"), FCodeStorage,
+                    PluginPath);
             }
             else
             {
