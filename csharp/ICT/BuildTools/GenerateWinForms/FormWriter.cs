@@ -1037,6 +1037,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("ACTIONENABLINGDISABLEMISSINGFUNCS", "");
             FTemplate.AddToCodelet("PRIMARYKEYCONTROLSREADONLY", "");
             FTemplate.AddToCodelet("SHOWDETAILSMANUAL", "");
+            FTemplate.AddToCodelet("PROCESSCMDKEY", "");
+            FTemplate.AddToCodelet("PROCESSCMDKEYCTRLF", "");
+            FTemplate.AddToCodelet("PROCESSCMDKEYCTRLR", "");
+            FTemplate.AddToCodelet("PROCESSCMDKEYMANUAL", "");
+            FTemplate.AddToCodelet("FOCUSFIRSTEDITABLEDETAILSPANELCONTROL", "");
             FTemplate.AddToCodelet("CLEARDETAILS", "");
             FTemplate.AddToCodelet("CATALOGI18N", "");
             FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLENUM", "");
@@ -1127,6 +1132,30 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.ManualFileExistsAndContains("FindAndFilterHookUpEvents"))
             {
                 FTemplate.AddToCodelet("FINDANDFILTERHOOKUPEVENTS", "FindAndFilterHookUpEvents();" + Environment.NewLine);
+            }
+
+            if (FTemplate.FSnippets.ContainsKey("PROCESSCMDKEYF9"))
+            {
+                if (FCodeStorage.FControlList.ContainsKey("grdDetails") && !FCodeStorage.FControlList["grdDetails"].HasAttribute("IgnoreF9F10]"))
+                {
+                    ProcessTemplate snipF9 = FTemplate.GetSnippet("PROCESSCMDKEYF9");
+                    FTemplate.InsertSnippet("PROCESSCMDKEY", snipF9);
+
+                    if (FCodeStorage.FControlList.ContainsKey("pnlDetails"))
+                    {
+                        ProcessTemplate snipF10 = FTemplate.GetSnippet("PROCESSCMDKEYF10");
+                        FTemplate.InsertSnippet("PROCESSCMDKEY", snipF10);
+
+                        ProcessTemplate snipFocusFirstControl = FTemplate.GetSnippet("FOCUSFIRSTDETAILSPANELCONTROL");
+                        FTemplate.InsertSnippet("FOCUSFIRSTEDITABLEDETAILSPANELCONTROL", snipFocusFirstControl);
+                    }
+                }
+
+                if (FCodeStorage.ManualFileExistsAndContains("ProcessCmdKeyManual(ref"))
+                {
+                    ProcessTemplate snipCmdKeyManual = FTemplate.GetSnippet("PROCESSCMDKEYMANUAL");
+                    FTemplate.InsertSnippet("PROCESSCMDKEYMANUAL", snipCmdKeyManual);
+                }
             }
 
             if (FCodeStorage.HasAttribute("DatasetType"))

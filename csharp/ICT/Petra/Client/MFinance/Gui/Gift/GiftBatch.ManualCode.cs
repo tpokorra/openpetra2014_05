@@ -67,6 +67,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
+        /// International To Base Exchange Rate
+        /// </summary>
+        public decimal FInternationalToBaseExchangeRate;
 
         /// <summary>
         /// use this ledger
@@ -274,7 +278,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!SaveChanges())
+            if (!ValidateAllData(false, true))
             {
                 e.Cancel = true;
 
